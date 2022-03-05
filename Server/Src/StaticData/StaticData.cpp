@@ -1081,7 +1081,7 @@ BOOL CStaticData::ReadSkillEvent()
 
         //取技能ID
         auto pAttr = pSkillNode->first_attribute("ID", strlen("ID"), false);
-        tSkillEventInfo.nSkillID = CommonConvert::StringToInt(pAttr->value());
+        tSkillEventInfo.dwSkillID = CommonConvert::StringToInt(pAttr->value());
 
         pAttr = pSkillNode->first_attribute("Duration", strlen("Duration"), false);
         tSkillEventInfo.uDuration = (UINT64)(CommonConvert::StringToFloat(pAttr->value()) * 1000);
@@ -1166,7 +1166,7 @@ BOOL CStaticData::ReadSkillEvent()
             tSkillEventInfo.vtEvents.push_back(tEvent);
         }
 
-        m_mapSkillEvent.insert(std::make_pair(tSkillEventInfo.nSkillID, tSkillEventInfo));
+        m_mapSkillEvent.insert(std::make_pair(tSkillEventInfo.dwSkillID, tSkillEventInfo));
     }
 
     return TRUE;
