@@ -182,9 +182,9 @@ BOOL CConnection::ExtractBuffer()
 
     while(TRUE)
     {
-        if(m_pCurRecvBuffer != NULL)
+        if(m_pCurRecvBuffer != NULL)    // 是否有正在拆的包
         {
-            if ((m_pCurRecvBuffer->GetTotalLenth() + m_nDataLen ) < m_nCurBufferSize)
+            if ((m_pCurRecvBuffer->GetTotalLenth() + m_nDataLen ) < m_nCurBufferSize)   // 当前包还未收完
             {
                 memcpy(m_pCurRecvBuffer->GetBuffer() + m_pCurRecvBuffer->GetTotalLenth(), m_pBufPos, m_nDataLen);
                 m_pBufPos = m_pRecvBuf;
@@ -192,7 +192,7 @@ BOOL CConnection::ExtractBuffer()
                 m_nDataLen = 0;
                 break;
             }
-            else
+            else  // 当前包已经收完，转处理
             {
                 memcpy(m_pCurRecvBuffer->GetBuffer() + m_pCurRecvBuffer->GetTotalLenth(), m_pBufPos, m_nCurBufferSize - m_pCurRecvBuffer->GetTotalLenth());
                 m_nDataLen -= m_nCurBufferSize - m_pCurRecvBuffer->GetTotalLenth();
@@ -205,7 +205,7 @@ BOOL CConnection::ExtractBuffer()
             }
         }
 
-        if(m_nDataLen < sizeof(PacketHeader))
+        if(m_nDataLen < sizeof(PacketHeader)) // 判断当前是否有一个消息包，用消息头大小判断
         {
             if (m_nDataLen >= 1 && *(BYTE*)m_pBufPos != 0x88)
             {
@@ -232,7 +232,7 @@ BOOL CConnection::ExtractBuffer()
             break;
         }
 
-        if (nPacketSize <= m_nDataLen)
+        if (nPacketSize <= m_nDataLen) // 当前缓存可解析出一个包头，且超过最前面一个包的大小，拆包转提取
         {
             IDataBuffer* pDataBuffer =  CBufferAllocator::GetInstancePtr()->AllocDataBuff(nPacketSize);
 
@@ -248,7 +248,7 @@ BOOL CConnection::ExtractBuffer()
             UpdateCheckNo(pDataBuffer->GetBuffer());
             m_pDataHandler->OnDataHandle(pDataBuffer, GetConnectionID());
         }
-        else
+        else   // 当前缓存可解析出一个包头，但当前缓存量不足此包大小
         {
             IDataBuffer* pDataBuffer =  CBufferAllocator::GetInstancePtr()->AllocDataBuff(nPacketSize);
             memcpy(pDataBuffer->GetBuffer(), m_pBufPos, m_nDataLen);

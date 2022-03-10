@@ -11,7 +11,7 @@ CConfigFile::~CConfigFile( void )
 
 }
 
-BOOL CConfigFile::Load( std::string strFileName )
+BOOL CConfigFile::Load( std::string strFileName ) // 加载配置文件，解析
 {
     FILE* pFile = fopen(strFileName.c_str(), "r+");
 
@@ -24,7 +24,7 @@ BOOL CConfigFile::Load( std::string strFileName )
 
     do
     {
-        fgets(szBuff, 256, pFile);
+        fgets(szBuff, 256, pFile);  // 按行
 
         if(szBuff[0] == '#')
         {

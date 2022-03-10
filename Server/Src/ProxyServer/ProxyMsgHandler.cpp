@@ -55,13 +55,13 @@ BOOL CProxyMsgHandler::DispatchPacket(NetPacket* pNetPacket)
         {
             if((pPacketHeader->nMsgID >= MSG_LOGICSVR_MSGID_BEGIN) && (pPacketHeader->nMsgID <= MSG_LOGICSVR_MSGID_END))
             {
-                if(pNetPacket->m_nConnID == CGameService::GetInstancePtr()->GetLogicConnID())
+                if(pNetPacket->m_nConnID == CGameService::GetInstancePtr()->GetLogicConnID())   // 逻辑服来的，逻辑类消息，直接转发给目标客户端
                 {
                     RelayToConnect(pPacketHeader->dwUserData, pNetPacket->m_pDataBuffer);
                 }
                 else //这是客户端发过来的消息
                 {
-                    CConnection* pConnection = ServiceBase::GetInstancePtr()->GetConnectionByID(pNetPacket->m_nConnID);
+                    CConnection* pConnection = ServiceBase::GetInstancePtr()->GetConnectionByID(pNetPacket->m_nConnID); // 底层接收连接
                     ERROR_RETURN_TRUE(pConnection !=  NULL);
 
                     if (pConnection->GetConnectionData() != pPacketHeader->u64TargetID)
@@ -72,9 +72,9 @@ BOOL CProxyMsgHandler::DispatchPacket(NetPacket* pNetPacket)
                     RelayToLogicServer(pNetPacket->m_pDataBuffer);
                 }
             }
-            else if((pPacketHeader->nMsgID >= MSG_SCENESVR_MSGID_BEGIN) && (pPacketHeader->nMsgID <= MSG_SCENESVR_MSGID_END))
+            else if((pPacketHeader->nMsgID >= MSG_SCENESVR_MSGID_BEGIN) && (pPacketHeader->nMsgID <= MSG_SCENESVR_MSGID_END)) // 场景消息
             {
-                if(IsServerConnID(pNetPacket->m_nConnID))
+                if(IsServerConnID(pNetPacket->m_nConnID)) // 如果是服务器来的，转发给客户端
                 {
                     RelayToConnect(pPacketHeader->dwUserData, pNetPacket->m_pDataBuffer);
                 }
@@ -115,14 +115,14 @@ BOOL CProxyMsgHandler::OnCloseConnect(INT32 nConnID)
     }
 
     RoleDisconnectReq Req;
-    Req.set_roleid(pConn->GetConnectionData());
+    Req.set_roleid(pConn->GetConnectionData()); // 在此表示当前连接的账号id，
     ServiceBase::GetInstancePtr()->SendMsgProtoBuf(CGameService::GetInstancePtr()->GetLogicConnID(), MSG_DISCONNECT_NTY, pConn->GetConnectionData(), 0,  Req);
 
     CProxyPlayer* pPlayer = CProxyPlayerMgr::GetInstancePtr()->GetByRoleID(pConn->GetConnectionData());
     ERROR_RETURN_TRUE(pPlayer != NULL);
     ERROR_RETURN_TRUE(pPlayer->GetConnID() == nConnID);
 
-    if (pPlayer->GetGameSvrID() != 0)
+    if (pPlayer->GetGameSvrID() != 0)   // 通知场景服，玩家下线
     {
         INT32 nConnID = GetGameSvrConnID(pPlayer->GetGameSvrID());
         ERROR_RETURN_TRUE(nConnID != 0);
@@ -179,7 +179,7 @@ BOOL CProxyMsgHandler::IsServerConnID(INT32 nConnID)
         return TRUE;
     }
 
-    for(std::map<INT32, INT32>::iterator itor = m_mapSvrIDtoConnID.begin(); itor != m_mapSvrIDtoConnID.end(); itor++)
+    for(std::map<INT32, INT32>::iterator itor = m_mapSvrIDtoConnID.begin(); itor != m_mapSvrIDtoConnID.end(); itor++)   // 另外建个 ConnId + SrvId 链表
     {
         if(itor->second == nConnID)
         {

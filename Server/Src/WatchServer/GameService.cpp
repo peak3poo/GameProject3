@@ -28,7 +28,7 @@ BOOL CGameService::Init()
     }
 
     CLog::GetInstancePtr()->LogInfo("---------服务器开始启动--------");
-    if(!CConfigFile::GetInstancePtr()->Load("watchcfg.ini"))
+    if(!CConfigFile::GetInstancePtr()->Load("servercfg.ini"))
     {
         CLog::GetInstancePtr()->LogError("配制文件加载失败!");
         return FALSE;

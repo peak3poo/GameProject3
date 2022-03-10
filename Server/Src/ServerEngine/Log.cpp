@@ -2,7 +2,7 @@
 #include "Log.h"
 CLog::CLog(void)
 {
-    m_LogLevel = 4;
+    m_LogLevel = Log_None;
 }
 
 CLog::~CLog(void)
@@ -26,7 +26,7 @@ BOOL CLog::Start(std::string strPrefix, std::string strLogDir)
     m_strPrefix = strPrefix;
     m_strLogDir = strLogDir;
 #ifdef WIN32
-    SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_EXTENDED_FLAGS);
+    SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_EXTENDED_FLAGS); // 设置控制台输入缓冲区的输入模式或控制台屏幕缓冲区的输出模式 https://docs.microsoft.com/zh-cn/windows/console/setconsolemode
 #endif
     m_pLogFile = NULL;
 
@@ -186,14 +186,14 @@ void CLog::LogInfo( char* lpszFormat, ... )
     snprintf(szLog, 2048, "[%02d-%02d-%02d %02d:%02d:%02d][%04x][I] ", CurTime.tm_year % 100, CurTime.tm_mon + 1, CurTime.tm_mday, CurTime.tm_hour, CurTime.tm_min, CurTime.tm_sec, 0xffff & CommonFunc::GetCurThreadID());
 
     va_list argList;
-    va_start( argList, lpszFormat );
-    vsnprintf(szLog + 28, 1024 - 28,  lpszFormat, argList);
+    va_start( argList, lpszFormat );    // 可变参数结构 https://www.runoob.com/cprogramming/c-macro-va_end.html
+    vsnprintf(szLog + 28, 1024 - 28,  lpszFormat, argList); // 属于可变参数。用于向字符串中打印数据、数据格式用户自定义 https://baike.baidu.com/item/_vsnprintf/5395011?fr=aladdin
     va_end( argList );
 
     strncat(szLog, "\n", 3);
 
     m_WriteMutex.lock();
-    fputs(szLog, m_pLogFile);
+    fputs(szLog, m_pLogFile); // 向指定的文件写入一个字符串
     fflush(m_pLogFile);
     m_LogCount++;
     CommonFunc::PrintColorText(szLog, Log_Info);

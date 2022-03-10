@@ -414,8 +414,8 @@ bool CppMySQL3DB::open(const char* host, const char* user, const char* passwd, c
     //如果连接失败，返回NULL。对于成功的连接，返回值与第1个参数的值相同。
     if ( NULL == mysql_real_connect( m_pMySqlDB, host, user, passwd, db, port, NULL, client_flag) )
     {
-        m_nErrNo = mysql_errno(m_pMySqlDB);
-        m_strError = mysql_error(m_pMySqlDB);
+        m_nErrNo = mysql_errno(m_pMySqlDB); // 错误码
+        m_strError = mysql_error(m_pMySqlDB); //  MySQL 操作产生的文本错误信息
         mysql_close(m_pMySqlDB);
         m_pMySqlDB = NULL;
         return false;
@@ -439,7 +439,7 @@ bool CppMySQL3DB::open(const char* host, const char* user, const char* passwd, c
 
     //选择制定的数据库失败
     //0表示成功，非0值表示出现错误。
-    if ( mysql_select_db( m_pMySqlDB, db ) != 0 )
+    if ( mysql_select_db( m_pMySqlDB, db ) != 0 ) // 设置活动的MySQL 数据库
     {
         m_nErrNo = mysql_errno(m_pMySqlDB);
         m_strError = mysql_error(m_pMySqlDB);
@@ -641,7 +641,7 @@ bool CppMySQL3DB::reconnect()
 * 说明:事务支持InnoDB or BDB表类型
 */
 /* 主要功能:开始事务 */
-bool CppMySQL3DB::startTransaction()
+bool CppMySQL3DB::startTransaction() // 开启一个事务块，配合下面的 COMMIT 使用， 先开启->再提交
 {
     m_nErrNo = 0;
     if(!mysql_real_query(m_pMySqlDB, "START TRANSACTION", (unsigned long)strlen("START TRANSACTION") ))
@@ -656,7 +656,7 @@ bool CppMySQL3DB::startTransaction()
 }
 
 /* 主要功能:提交事务 */
-bool CppMySQL3DB::commit()
+bool CppMySQL3DB::commit()// 如果数据库 配置的 autocommit 为0（OFF）,则需要手动调用 COMMIT 命令，数据才会落地保存；可以和 BEGIN 命令一起用，更佳 https://blog.csdn.net/w450093854/article/details/85255280
 {
     m_nErrNo = 0;
     if(!mysql_real_query( m_pMySqlDB, "COMMIT", (unsigned long)strlen("COMMIT") ) )

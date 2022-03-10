@@ -5,7 +5,7 @@
 #include "../Message/Msg_ID.pb.h"
 
 #ifdef WIN32
-static BOOL        ExitRoutine(INT32 nSignal)
+static BOOL        ExitRoutine(INT32 nSignal)   // 控制台状态 捕获ctrl+c程序关闭事件 ，达成子进程杀父进程   -- 观察窗者 看门狗进程
 {
     switch (nSignal)
     {

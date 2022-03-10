@@ -35,7 +35,7 @@ struct NetIoOperatorData
     void            Reset();
 };
 
-class CConnection
+class CConnection // 相当于另一个项目的客户端
 {
 public:
     CConnection();

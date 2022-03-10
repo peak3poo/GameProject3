@@ -46,11 +46,11 @@ BOOL CommonFunc::SetCurrentWorkDir(std::string strPath)
 {
     if (strPath.empty())
     {
-        strPath = GetCurrentExeDir();
+        strPath = GetCurrentExeDir();   // 取当前目录 
     }
 
 #ifdef WIN32
-    SetCurrentDirectory(strPath.c_str());
+    SetCurrentDirectory(strPath.c_str());   // 设置当前工作目录，后续文件操作就不用绝对路径 https://blog.csdn.net/wishfly/article/details/2906187  https://bbs.csdn.net/topics/390719910
 #else
     chdir(strPath.c_str());
 #endif
@@ -230,7 +230,7 @@ BOOL CommonFunc::CreateDir( std::string& strDir )
 {
     int nRet = 0;
 #ifdef WIN32
-    nRet = _mkdir(strDir.c_str());
+    nRet = _mkdir(strDir.c_str()); // 创建目标，可同时创建多级目录 https://blog.csdn.net/xihuanniNI/article/details/80759627
 #else
     nRet = mkdir(strDir.c_str(), S_IRWXU);
 #endif
@@ -240,7 +240,7 @@ BOOL CommonFunc::CreateDir( std::string& strDir )
         return TRUE;
     }
 
-    if(errno == EEXIST)
+    if(errno == EEXIST) // 系统的最后一次错误代码 https://baike.baidu.com/item/errno/11040395?fr=aladdin
     {
         return TRUE;
     }
@@ -905,7 +905,7 @@ BOOL CommonFunc::IsAlreadyRun(std::string strSignName)
 {
 #ifdef WIN32
     HANDLE hMutex = NULL;
-    hMutex = CreateMutex(NULL, FALSE, strSignName.c_str());
+    hMutex = CreateMutex(NULL, FALSE, strSignName.c_str()); // 找出当前系统是否已经存在指定进程的实例。如果没有则创建一个互斥体 https://baike.baidu.com/item/CreateMutex/9584433?fr=aladdin
     if (hMutex != NULL)
     {
         if (GetLastError() == ERROR_ALREADY_EXISTS)
@@ -948,14 +948,14 @@ BOOL CommonFunc::IsAlreadyRun(std::string strSignName)
 #endif
 }
 
-BOOL CommonFunc::PrintColorText(CHAR* pSzText, INT32 nColor)
+BOOL CommonFunc::PrintColorText(CHAR* pSzText, INT32 nColor)  // 不同级别日志 用不同颜色打印日志
 {
 #ifdef WIN32
     switch (nColor)
     {
         case 1:
         {
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);    // 控制台属性
             printf(pSzText);
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
         }

@@ -570,13 +570,13 @@ BOOL CNetManager::EventDelete(CConnection* pConnection)
 #endif
 
 
-BOOL CNetManager::Start(UINT16 nPortNum, INT32 nMaxConn, IDataHandler* pBufferHandler, std::string strIpAddr)
+BOOL CNetManager::Start(UINT16 nPortNum, INT32 nMaxConn, IDataHandler* pBufferHandler, std::string strIpAddr) // 网络管理
 {
     ERROR_RETURN_FALSE(pBufferHandler != NULL);
 
     m_pBufferHandler = pBufferHandler;
 
-    CConnectionMgr::GetInstancePtr()->InitConnectionList(nMaxConn);
+    CConnectionMgr::GetInstancePtr()->InitConnectionList(nMaxConn); // 初始连接列表
 
     if(!InitNetwork())
     {

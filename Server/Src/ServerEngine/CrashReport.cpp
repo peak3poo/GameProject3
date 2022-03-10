@@ -57,7 +57,7 @@ long   __stdcall  CrashCallBack(_EXCEPTION_POINTERS* pExInfo)
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
-void  SetCrashReport(std::string strAppName)
+void  SetCrashReport(std::string strAppName) // 设置崩溃相关处理
 {
     g_AppName = strAppName;
 

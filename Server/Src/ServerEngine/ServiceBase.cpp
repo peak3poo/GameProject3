@@ -45,13 +45,13 @@ BOOL ServiceBase::OnDataHandle(IDataBuffer* pDataBuffer, INT32 nConnID)
     return TRUE;
 }
 
-BOOL ServiceBase::StartNetwork(UINT16 nPortNum, INT32 nMaxConn, IPacketDispatcher* pDispather, std::string strListenIp)
+BOOL ServiceBase::StartNetwork(UINT16 nPortNum, INT32 nMaxConn, IPacketDispatcher* pDispather, std::string strListenIp) // 设置网络
 {
     ERROR_RETURN_FALSE(pDispather != NULL);
     ERROR_RETURN_FALSE(nPortNum > 0);
     ERROR_RETURN_FALSE(nMaxConn > 0);
 
-    m_pPacketDispatcher = pDispather;
+    m_pPacketDispatcher = pDispather;   // 分包器，接口之一
 
     if (!CNetManager::GetInstancePtr()->Start(nPortNum, nMaxConn, this, strListenIp))
     {
